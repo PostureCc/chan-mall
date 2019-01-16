@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chan.dao.user.UserDao">
+
+    <sql id="column">
+         `ID`,`USER_ID`,`USER_NAME`,`USER_PWD`,`EMAIL`,`PHONE`,`SEX`,`IMAGE`,`BIRTHDAY`,`CRT_TIME`,`UPDATE_TIME`,`STATE`
+    </sql>
+
+    <select id="login" parameterType="com.chan.bean.User" resultType="com.chan.bean.User">
+        SELECT
+        <include refid="column"/>
+        FROM`chan_mall`.`tb_user`
+        WHERE `USER_ID` = #{userId}
+        AND USER_PWD = #{userPwd}
+    </select>
+
+    <select id="search" parameterType="com.chan.bean.User" resultType="com.chan.bean.User">
+        SELECT
+        <include refid="column"/>
+        FROM`chan_mall`.`tb_user`
+        WHERE 1 = 1
+        <if test="id != null and id != 0">AND `ID` = #{id}</if>
+        <if test="userId != null and userId != ''">AND `USER_ID` = #{userId}</if>
+        <if test="userName != null and userName != ''">AND `USER_NAME` = #{userName}</if>
+        <if test="userPwd != null and userPwd != ''">AND `USER_PWD` = #{userPwd}</if>
+        <if test="email != null and email != ''">AND `EMAIL` = #{email}</if>
+        <if test="phone != null and phone != ''">AND `PHONE` = #{phone}</if>
+        <if test="sex != null and sex != ''">AND `SEX` = #{sex}</if>
+        <if test="birthday != null and birthday != ''">AND `birthday` = #{birthday}</if>
+        <if test="image != null and image != ''">AND `IMAGE` = #{image}</if>
+        <if test="state != null and state != ''">AND `state` = #{state}</if>
+    </select>
+
+    <insert id="addInfo" parameterType="com.chan.bean.User">
+
+    </insert>
+
+    <delete id="delInfo" parameterType="java.lang.Integer">
+        DELETE FROM `chan_mall`.`tb_user`
+        WHERE `ID` = #{id}
+    </delete>
+
+    <update id="updateInfo" parameterType="com.chan.bean.User">
+        UPDATE `chan_mall`.`tb_user`
+        SET
+        <if test="id != null and id != 0">`ID` = #{id}</if>
+        <if test="userId != null and userId != ''">,`USER_ID` = #{userId}</if>
+        <if test="userName != null and userName != ''">, `USER_NAME` = #{userName}</if>
+        <if test="userPwd != null and userPwd != ''">, `USER_PWD` = #{userPwd}</if>
+        <if test="email != null and email != ''">, `EMAIL` = #{email}</if>
+        <if test="phone != null and phone != ''">, `PHONE` = #{phone}</if>
+        <if test="sex != null and sex != ''">, `SEX` = #{sex}</if>
+        <if test="birthday != null and birthday != ''">, `birthday` = #{birthday}</if>
+        <if test="image != null and image != ''">, `IMAGE` = #{image}</if>
+        <if test="state != null and state != ''">, `state` = #{state}</if>
+        WHERE `ID` = #{id}
+    </update>
+
+</mapper> 
