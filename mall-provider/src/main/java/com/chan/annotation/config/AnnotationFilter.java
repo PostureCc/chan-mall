@@ -1,6 +1,6 @@
 package com.chan.annotation.config;
 
-import com.chan.token.Token;
+import com.chan.context.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
@@ -28,7 +28,7 @@ public class AnnotationFilter implements HandlerInterceptor {
             throws Exception {
         logger.info("WrongCodeInterceptor, preHandle......");
         if (handler instanceof HandlerMethod) {
-            String token = request.getHeader(Token.TOKEN);
+            String token = request.getHeader(Constants.TOKEN);
             logger.info("token:{}", token);
 //            Map<String, Object> params = new HashMap<>(3);
 //            List<Map<String, Object>> userList = studentDao.search(params);

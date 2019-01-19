@@ -22,5 +22,4 @@ public class User extends BaseBean {
     private Date updateTime;
     private Integer state;
 
-
 }

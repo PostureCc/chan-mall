@@ -1,20 +1,20 @@
 package com.chan.service;
 
-
 import com.chan.bean.User;
-
-import java.util.List;
+import com.chan.response.ResultBean;
 
 public interface UserService {
 
-    User login(User user);
+    ResultBean login(User user);
 
-    List<User> search(User user);
+//    ResultBean logout();
 
-    int addInfo(User user);
+    ResultBean search(User user);
 
-    int updateInfo(User user);
+    ResultBean addInfo(User user);
 
-    int delInfo(Integer id);
+    ResultBean updateInfo(User user);
+
+    ResultBean delInfo(Integer id);
 
 }

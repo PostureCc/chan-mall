@@ -3,22 +3,25 @@ package com.chan.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chan.bean.User;
+import com.chan.context.Constants;
+import com.chan.context.UserInfo;
 import com.chan.dao.user.UserDao;
 import com.chan.exception.ErrorCodes;
 import com.chan.exception.ValidationException;
-import com.chan.token.Token;
+import com.chan.response.BaseService;
+import com.chan.response.ResultBean;
 import com.chan.utils.redis.RedisService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service("userService")
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseService implements UserService {
 
     private final Logger LOG = LoggerFactory.getLogger(this.getClass().toString());
 
@@ -30,52 +33,61 @@ public class UserServiceImpl implements UserService {
     @Qualifier("redisService")
     private RedisService redisService;
 
+    @Autowired
+    private UserInfo userInfo;
+
     @Override
-    public User login(User user) {
-        if (Objects.isNull(user)) {
-            throw new ValidationException(ErrorCodes.PARAMETERS_OF_THE_ABNORMAL);
+    public ResultBean login(User user) {
+        if (StringUtils.isBlank(user.getUserId()) || StringUtils.isBlank(user.getUserPwd())) {
+            return super.errorResult(ErrorCodes.PARAMETERS_OF_THE_ABNORMAL);
         }
         try {
             User cacheToken = null;
-            StringBuilder token = new StringBuilder(Token.USER_ID).append("_").append(user.getUserId());
+            StringBuilder token = new StringBuilder(Constants.USER_ID).append("_").append(user.getUserId());
             Object obj = redisService.get(token.toString());
             if (Objects.isNull(obj)) {
                 cacheToken = userDao.login(user);
                 if (Objects.isNull(cacheToken)) {
-                    throw new ValidationException(ErrorCodes.USER_IS_NULL);
+                    return super.errorResult(ErrorCodes.USER_IS_NULL);
                 } else {
                     redisService.set(token.toString(), cacheToken, RedisService.HALF_DAY);
                 }
             } else {
                 cacheToken = JSON.parseObject(JSONObject.toJSONString(obj), User.class);
             }
-            return cacheToken;
+            return super.successSingleResult(cacheToken);
         } catch (ValidationException e) {
             LOG.error(e.getMessage(), e);
-            throw new ValidationException(e.getError());
+            return super.errorResult(e.getError());
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            throw new ValidationException(ErrorCodes.RESULT_SYS_ERR);
+            return super.errorResult(ErrorCodes.RESULT_SYS_ERR);
         }
     }
 
+//    @Override
+//    public ResultBean logout() {
+//        StringBuilder token = new StringBuilder(Constants.USER_ID).append("_").append(user.getUserId());
+//        return null;
+//    }
+
     @Override
-    public List<User> search(User user) {
-        return userDao.search(user);
+    public ResultBean search(User user) {
+        return super.successSingleResult(userDao.search(user));
     }
 
     @Override
-    public int addInfo(User user) {
-        return userDao.addInfo(user);
+    public ResultBean addInfo(User user) {
+        return super.successSingleResult(userDao.addInfo(user));
     }
 
     @Override
-    public int updateInfo(User user) {
-        return userDao.updateInfo(user);
+    public ResultBean updateInfo(User user) {
+        return super.successSingleResult(userDao.updateInfo(user));
     }
 
     @Override
-    public int delInfo(Integer id) {
-        return userDao.delInfo(id);
+    public ResultBean delInfo(Integer id) {
+        return super.successSingleResult(userDao.delInfo(id));
     }
 }
